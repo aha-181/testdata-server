@@ -1,0 +1,47 @@
+body {
+  padding-left: 50px;
+  padding-right: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+label {
+  padding-left: 2em;
+}
+
+select, input {
+  margin-top: 0.5em;
+}
+
+#queryButton {
+  display: block;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  text-align: left;
+  padding: 5px;
+}
+
+#timespanTable {
+    float: left;
+    margin-right: 10px;
+}
+
+/*Leaflet Map*/
+#map {
+  width: 700px;
+  height: 400px;
+  display: inline-block;
+}
+
+/*GeoAdmin Map*/
+.map {
+  height: 400px;
+  width: 40%;
+  display: inline-block;
+}

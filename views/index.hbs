@@ -1,0 +1,196 @@
+<div id="map"></div>
+
+<div id="mapGeoAdmin" class="map"></div>
+
+
+<form action="/tagMeasurement" method="post">
+    <label for="groundTag">Select Ground Tag:</label>
+    <select name="groundTag" id="groundTag">
+        <option selected disabled hidden>Choose here</option>
+        <option value="1">Railway</option>
+        <option value="2">Street</option>
+        <option value="3">Building Area</option>
+        <option value="100">Other</option> /*OSM Tag is defined but not in dropdown list*/
+        <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
+    </select>
+
+    <label for="surroundingTag">Select Surrounding Tag:</label>
+    <select name="surroundingTag" id="surroundingTag">
+        <option selected disabled hidden>Choose here</option>
+        <option value="1">Forest</option> /*OSM: landuse forest, orchard*/
+        <option value="2">Grass</option> /*OSM: landuse farmland, grass, meadow, recreation_ground, allotments*/
+        <option value="3">Water</option> /*OSM: landuse basin, natural water*/
+        <option value="4">Building</option> /*OSM: building*/
+        <option value="100">Other</option> /*OSM Tag is defined but not in dropdown list*/
+        <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
+    </select>
+
+    <label for="typeOfMotionTag">Select Type of Motion Tag:</label>
+    <select name="typeOfMotionTag" id="typeOfMotionTag">
+        <option selected disabled hidden>Choose here</option>
+        <option value="1">Stationary < 3km/h</option> /*Stationär < 3 km/h*/
+        <option value="2">Pedestrian 3 km/h - < 10 km/h</option> /*Gehend, rennend: Fussgänger: 3 km/h … < 10 km/h*/
+        <option value="3">Vehicular 10 km/h - < 120 km/h</option> /*Fahrend: Fahrzeuge: 10 km/h … < 120 km/h*/
+        <option value="4">High-speed 120 km/h - < 350km/h</option> /*Hochgeschwindigkeitsfahrzeuge: 120 km/h … < 350km/h*/
+        <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
+    </select>
+
+    <br>
+    <label for="populationDensityTag">Select Population Density Tag:</label>
+    <select name="populationDensityTag" id="populationDensityTag">
+        <option selected disabled hidden>Choose here</option>
+        <option value="1">Kleinzentren</option>
+        <option value="1">Periurbane ländliche Gemeinde</option>
+        <option value="1">Agrargemeinde</option>
+        <option value="1">Touristische Gemeinde</option> /* bis hier ländlich, ch.are.gemeindetypen */
+        <option value="2">Grosszentren</option> /* ab hier städtisch, ch.are.gemeindetypen */
+        <option value="2">Nebenzentren der Grosszentren</option>
+        <option value="2">Gürtel der Grosszentren</option>
+        <option value="2">Mittelzentren</option>
+        <option value="2">Gürtel der Mittelzentren</option>
+        <option value="100">Other</option> /*anderer definierter Typ*/
+        <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
+    </select>
+
+    <label for="measurementId">MeasurementID:</label>
+    <input type="text" name="measurementId" id="measurementId" value="" readonly/>
+    <input type="submit" value="Submit" />
+</form>
+
+<br>
+<table id="timespanTable">
+    <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Tage</th>
+            <th>Beschreibung</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Dezember/Januar</td>
+            <td>--</td>
+            <td>vor allem Tests im Schnellzug Bern - Zürich</td>
+        </tr>
+        <tr>
+            <td>ab 22.3. 2017</td>
+            <td>Mo - Fr</td>
+            <td>jeweils am Morgen ca. 06:50-07:50 Fahrt von <br>Oberglatt nach Rapperswil
+                <br>Rückfahrt jeweils zwischen 17:44 bis 19:44 <br>von Rapperswil nach Oberglatt</td>
+        </tr>
+        <tr>
+            <td>25.03.2017</td>
+            <td>SA</td>
+            <td>Autofahrt Neerach - Zürich-Witikon - Burgdorf <br>- Zürich Witikon - Neerach</td>
+        </tr>
+        <tr>
+            <td>27.3. bis 31.3.2017</td>
+            <td>MO-FR</td>
+            <td>jeweils am Morgen ca. 06:50-07:50 Fahrt von <br>Oberglatt nach Rapperswil
+                <br>Rückfahrt jeweils zwischen 17:44 bis 19:44 <br>von Rapperswil nach Oberglatt</td>
+        </tr>
+        <tr>
+            <td>31.03.2017</td>
+            <td>FR</td>
+            <td>Fahrt mit dem Roten Pfeil von Rapperswil nach <br>Luzern und wieder zurück nach Rapperswil</td>
+        </tr>
+        <tr>
+            <td>4.4. bis …</td>
+            <td>MO-FR</td>
+            <td>jeweils am Morgen ca. 06:50-07:50 Fahrt von <br>Oberglatt nach Rapperswil
+                <br>Rückfahrt jeweils zwischen 17:44 bis 19:44 <br>von Rapperswil nach Oberglatt</td>
+        </tr>
+    </tbody>
+</table>
+
+<table id="detailsTable">
+    <thead>
+        <tr>
+            <th>Date and Time</th>
+            <th>Phase</th>
+            <th>Lat</th>
+            <th>Long</th>
+            <th>Horizontal Accuracy</th>
+            <th>Vertical Accuracy</th>
+            <th>Altitude</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="font-weight: bold">Average Velocity in km/h</td>
+            <td id="geschwindigkeit" colspan="6"></td>
+        </tr>
+        <tr>
+            <td id="dateTime0"></td>
+            <td id="phase0"></td>
+            <td id="lat0"></td>
+            <td id="long0"></td>
+            <td id="horizonaltAcc0"></td>
+            <td id="verticalAcc0"></td>
+            <td id="altitude0"></td>
+        </tr>
+        <tr>
+            <td id="dateTime1"></td>
+            <td id="phase1"></td>
+            <td id="lat1"></td>
+            <td id="long1"></td>
+            <td id="horizonaltAcc1"></td>
+            <td id="verticalAcc1"></td>
+            <td id="altitude1"></td>
+        </tr>
+        <tr>
+            <td id="dateTime2"></td>
+            <td id="phase2"></td>
+            <td id="lat2"></td>
+            <td id="long2"></td>
+            <td id="horizonaltAcc2"></td>
+            <td id="verticalAcc2"></td>
+            <td id="altitude2"></td>
+        </tr>
+        <tr>
+            <td id="dateTime3"></td>
+            <td id="phase3"></td>
+            <td id="lat3"></td>
+            <td id="long3"></td>
+            <td id="horizonaltAcc3"></td>
+            <td id="verticalAcc3"></td>
+            <td id="altitude3"></td>
+        </tr>
+        <tr>
+            <td id="dateTime4"></td>
+            <td id="phase4"></td>
+            <td id="lat4"></td>
+            <td id="long4"></td>
+            <td id="horizonaltAcc4"></td>
+            <td id="verticalAcc4"></td>
+            <td id="altitude4"></td>
+        </tr>
+        <tr>
+            <td id="dateTime5"></td>
+            <td id="phase5"></td>
+            <td id="lat5"></td>
+            <td id="long5"></td>
+            <td id="horizonaltAcc5"></td>
+            <td id="verticalAcc5"></td>
+            <td id="altitude5"></td>
+        </tr>
+        <tr>
+            <td id="dateTime6"></td>
+            <td id="phase6"></td>
+            <td id="lat6"></td>
+            <td id="long6"></td>
+            <td id="horizonaltAcc6"></td>
+            <td id="verticalAcc6"></td>
+            <td id="altitude6"></td>
+        </tr>
+        <tr>
+            <td id="dateTime7"></td>
+            <td id="phase7"></td>
+            <td id="lat7"></td>
+            <td id="long7"></td>
+            <td id="horizonaltAcc7"></td>
+            <td id="verticalAcc7"></td>
+            <td id="altitude7"></td>
+        </tr>
+    </tbody>
+</table>
