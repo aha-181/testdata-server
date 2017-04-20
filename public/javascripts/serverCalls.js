@@ -68,7 +68,9 @@ window.onload = function () {
             requestVelocity.onreadystatechange = function() {
                 if (this.readyState === 4 && this.status === 200) {
                     var result = JSON.parse(this.response);
-                    document.getElementById("geschwindigkeit").appendChild(document.createTextNode(result.velocity_kmh));
+                    document.getElementById("velocity").appendChild(document.createTextNode(result.velocity_kmh));
+                    document.getElementById("distance").appendChild(document.createTextNode(result.distance_m));
+                    document.getElementById("time").appendChild(document.createTextNode(result.time_s));
                 }
             };
 

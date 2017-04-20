@@ -32,6 +32,10 @@ table, th, td {
     margin-right: 10px;
 }
 
+#velocityTable {
+  margin-bottom: 10px;
+}
+
 /*Leaflet Map*/
 #map {
   width: 700px;
