@@ -4,12 +4,13 @@
 
 
 <form action="/tagMeasurement" method="post">
-    <label for="groundTag">Select Ground Tag:</label>
-    <select name="groundTag" id="groundTag">
+    <label for="locationTag">Select Location Tag:</label>
+    <select name="locationTag" id="locationTag">
         <option selected disabled hidden>Choose here</option>
-        <option value="1">Railway</option>
-        <option value="2">Street</option>
-        <option value="3">Building Area</option>
+        <option value="1">Train</option>
+        <option value="2">Car</option>
+        <option value="3">Foot Inside (Building)</option>
+        <option value="4">Foot Outside</option>
         <option value="100">Other</option> /*OSM Tag is defined but not in dropdown list*/
         <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
     </select>
@@ -138,7 +139,7 @@
             <td id="phase0"></td>
             <td id="lat0"></td>
             <td id="long0"></td>
-            <td id="horizonaltAcc0"></td>
+            <td id="horizontalAcc0"></td>
             <td id="verticalAcc0"></td>
             <td id="altitude0"></td>
         </tr>
@@ -147,7 +148,7 @@
             <td id="phase1"></td>
             <td id="lat1"></td>
             <td id="long1"></td>
-            <td id="horizonaltAcc1"></td>
+            <td id="horizontalAcc1"></td>
             <td id="verticalAcc1"></td>
             <td id="altitude1"></td>
         </tr>
@@ -156,7 +157,7 @@
             <td id="phase2"></td>
             <td id="lat2"></td>
             <td id="long2"></td>
-            <td id="horizonaltAcc2"></td>
+            <td id="horizontalAcc2"></td>
             <td id="verticalAcc2"></td>
             <td id="altitude2"></td>
         </tr>
@@ -165,7 +166,7 @@
             <td id="phase3"></td>
             <td id="lat3"></td>
             <td id="long3"></td>
-            <td id="horizonaltAcc3"></td>
+            <td id="horizontalAcc3"></td>
             <td id="verticalAcc3"></td>
             <td id="altitude3"></td>
         </tr>
@@ -174,7 +175,7 @@
             <td id="phase4"></td>
             <td id="lat4"></td>
             <td id="long4"></td>
-            <td id="horizonaltAcc4"></td>
+            <td id="horizontalAcc4"></td>
             <td id="verticalAcc4"></td>
             <td id="altitude4"></td>
         </tr>
@@ -183,7 +184,7 @@
             <td id="phase5"></td>
             <td id="lat5"></td>
             <td id="long5"></td>
-            <td id="horizonaltAcc5"></td>
+            <td id="horizontalAcc5"></td>
             <td id="verticalAcc5"></td>
             <td id="altitude5"></td>
         </tr>
@@ -192,7 +193,7 @@
             <td id="phase6"></td>
             <td id="lat6"></td>
             <td id="long6"></td>
-            <td id="horizonaltAcc6"></td>
+            <td id="horizontalAcc6"></td>
             <td id="verticalAcc6"></td>
             <td id="altitude6"></td>
         </tr>
@@ -201,7 +202,7 @@
             <td id="phase7"></td>
             <td id="lat7"></td>
             <td id="long7"></td>
-            <td id="horizonaltAcc7"></td>
+            <td id="horizontalAcc7"></td>
             <td id="verticalAcc7"></td>
             <td id="altitude7"></td>
         </tr>

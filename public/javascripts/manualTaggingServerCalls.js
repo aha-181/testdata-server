@@ -52,7 +52,7 @@ window.onload = function () {
                 document.getElementById("lat" + i).appendChild(document.createTextNode(Latitude));
                 document.getElementById("long" + i).appendChild(document.createTextNode(Longitude));
                 document.getElementById("phase" + i).appendChild(document.createTextNode(Phase));
-                document.getElementById("horizonaltAcc" + i).appendChild(document.createTextNode(HorizontalAccuracy));
+                document.getElementById("horizontalAcc" + i).appendChild(document.createTextNode(HorizontalAccuracy));
                 document.getElementById("verticalAcc" + i).appendChild(document.createTextNode(VerticalAccuracy));
                 document.getElementById("altitude" + i).appendChild(document.createTextNode(Altitude));
             }
