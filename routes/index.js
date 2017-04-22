@@ -20,20 +20,18 @@ var amountOfRequestsDone = 0;
 
 function requestFinished(testMeasurementID) {
     if(++amountOfRequestsDone === amountOfRequests) {
-        testStatus = 'Done';
         var query = 'SELECT ReturnedLocationIsCorrect, ReturnedSurroundingIsCorrect, ReturnedTypeOfMotionIsCorrect, ReturnedPopulationDensityIsCorrect ' +
             'FROM returned_measurement_values WHERE TestMeasurementID = ?';
         var inserts = [testMeasurementID];
         query = mysql.format(query, inserts);
         connection.query(query, function (error, results, fields) {
             if (error) {
-                res.render('TestingFeedback', {errors: 'error4'});
                 throw error;
             }
 
             var totalCorrect = 0;
             for(var i = 0; i < results.length; i++) {
-                totalCorrect = results[i].ReturnedLocationIsCorrect + results[i].ReturnedSurroundingIsCorrect +
+                totalCorrect = totalCorrect + results[i].ReturnedLocationIsCorrect + results[i].ReturnedSurroundingIsCorrect +
                     results[i].ReturnedTypeOfMotionIsCorrect + results[i].ReturnedPopulationDensityIsCorrect;
             }
 
@@ -44,12 +42,9 @@ function requestFinished(testMeasurementID) {
             updateQuery = mysql.format(updateQuery, insertsOfUpdate);
             connection.query(updateQuery, function (error, results) {
                 if (error) {
-                    res.render('TestingFeedback', {errors: 'error5'});
                     throw error;
                 }
-
-                //TODO: show results
-                console.log("done!");
+                testStatus = 'Done';
             });
 
         });
@@ -63,6 +58,77 @@ router.get('/testStatus', function(req, res) {
         amountOfRequestsDone: amountOfRequestsDone, errors: errors }));
 });
 
+
+router.get('/testResults', function(req, res, next) {
+
+    var queryLatestTest = 'SELECT TestMeasurementID, ReturnedLocationIsCorrect, ReturnedSurroundingIsCorrect, ReturnedTypeOfMotionIsCorrect, ' +
+        'ReturnedPopulationDensityIsCorrect FROM returned_measurement_values WHERE TestMeasurementID = ( SELECT MAX(TestMeasurementID) ' +
+        'FROM returned_measurement_values )';
+
+    connection.query(queryLatestTest, function (error, results, fields) {
+        if(error) {
+            throw error;
+        }
+
+        var testNumber = req.query.test;
+
+        if(testNumber) {
+            if(!isNaN(testNumber)) {
+                if(testNumber < results[0].TestMeasurementID && testNumber > 0) {
+                    var queryOlderTest = 'SELECT TestMeasurementID, ReturnedLocationIsCorrect, ReturnedSurroundingIsCorrect, ReturnedTypeOfMotionIsCorrect, ' +
+                        'ReturnedPopulationDensityIsCorrect FROM returned_measurement_values WHERE TestMeasurementID = ?';
+                    var inserts = [testNumber];
+                    queryOlderTest = mysql.format(queryOlderTest, inserts);
+                    connection.query(queryOlderTest, function (error, resultsOlderQuery, fields) {
+                        if(error) {
+                            throw error;
+                        }
+                        renderCalculation(res, resultsOlderQuery);
+                    })
+                } else if(testNumber === results[0].TestMeasurementID.toString()) {
+                    renderCalculation(res, results);
+                } else {
+                    res.render('resultOfTests', {error: 'Specified Testnumber does not exist'});
+                }
+            } else {
+                res.render('resultOfTests', {error: 'Your input is not a number'});
+            }
+        } else {
+            renderCalculation(res, results);
+        }
+    });
+});
+
+function renderCalculation(res, results) {
+    var locationTotal = 0;
+    var surroundingTotal = 0;
+    var motionTotal = 0;
+    var populationTotal = 0;
+
+    for(var i = 0; i < results.length; i++) {
+        locationTotal += results[i].ReturnedLocationIsCorrect;
+        surroundingTotal += results[i].ReturnedSurroundingIsCorrect;
+        motionTotal += results[i].ReturnedTypeOfMotionIsCorrect;
+        populationTotal += results[i].ReturnedPopulationDensityIsCorrect;
+    }
+
+    var locationPercent = (locationTotal / results.length) * 100;
+    var surroundingPercent = (surroundingTotal / results.length) * 100;
+    var motionPercent = (motionTotal / results.length) * 100;
+    var populationPercent = (populationTotal / results.length) * 100;
+
+    var testID = results[0].TestMeasurementID;
+    var versionQuery = 'SELECT Version, PercentageOfCorrectness FROM resulting_correctness WHERE TestMeasurementID = ?';
+    var inserts = [testID];
+    versionQuery = mysql.format(versionQuery, inserts);
+
+    connection.query(versionQuery, function (error, results, fields) {
+        var version = results[0].Version;
+        var total = results[0].PercentageOfCorrectness;
+        res.render('resultOfTests', { testNumber: testID, version: version, total: total, location: locationPercent, surrounding: surroundingPercent,
+            typeOfMotion: motionPercent, populationDensity: populationPercent});
+    });
+}
 
 
 /* GET home page. */

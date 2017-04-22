@@ -12,6 +12,10 @@ window.addEventListener('load', function () {
                 document.getElementById('testStatus').innerHTML = 'Teststatus: ' + json.testStatus;
                 document.getElementById('errors').innerHTML = json.errors;
                 document.getElementById('requestsDone').innerHTML = json.amountOfRequestsDone + ' of ' + json.amountOfRequests;
+
+                if(json.testStatus === 'Done') {
+                    document.getElementById('showResultsButton').style.visibility = 'visible';
+                }
             }
         };
 
