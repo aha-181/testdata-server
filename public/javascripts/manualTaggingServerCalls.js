@@ -6,59 +6,57 @@ window.onload = function () {
     request.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 200) {
 
+            // read out values which are needed for the velocity calculation
             var results = JSON.parse(this.response);
-            var Latitude = null;
-            var Longitude = null;
-            var starttime = results[0].Date;
+            var latitude = null;
+            var longitude = null;
+            var startTime = results[0].Date;
             var longStart = results[0].Longitude;
             var latStart = results[0].Latitude;
-            var endtime = results[results.length - 1].Date;
+            var endTime = results[results.length - 1].Date;
             var longEnd = results[results.length - 1].Longitude;
             var latEnd = results[results.length - 1].Latitude;
 
+            // loop over every point in the result and set point on map and data in table
             for(var i = 0; i < results.length; i++) {
-                var MeasurementID = results[i].MeasurementID;
-                var Date = results[i].Date;
-                var Phase = results[i].Phase;
-                Latitude = results[i].Latitude;
-                Longitude = results[i].Longitude;
-                var Altitude = results[i].Altitude;
-                var HorizontalAccuracy = results[i].HorizontalAccuracy;
-                var VerticalAccuracy = results[i].VerticalAccuracy;
+                latitude = results[i].Latitude;
+                longitude = results[i].Longitude;
+                var horizontalAccuracy = results[i].HorizontalAccuracy;
 
-                if (Latitude !== null && Longitude !== null) {
-                    L.marker([Latitude, Longitude]).addTo(map);
+                if (latitude !== null && longitude !== null) {
+                    L.marker([latitude, longitude]).addTo(mapOsm);
                 }
 
-                if(Latitude !== null && Longitude !== null && HorizontalAccuracy !== null) {
-                    L.circle([Latitude, Longitude], {
+                if(latitude !== null && longitude !== null && horizontalAccuracy !== null) {
+                    // add radius of horizontal accuracy to the osm map
+                    L.circle([latitude, longitude], {
                         color: 'red',
                         fillColor: '#f03',
                         fillOpacity: 0.1,
-                        radius: HorizontalAccuracy
-                    }).addTo(map);
-
-
-                    //GeoAdminApi
-                    var position = [WGStoCHy(Latitude, Longitude), WGStoCHx(Latitude, Longitude)];
-
-                    // Zoom on the position
-                    mapGeoadmin.getView().setCenter(position);
-                    mapGeoadmin.getView().setResolution(5);
+                        radius: horizontalAccuracy
+                    }).addTo(mapOsm);
                 }
 
-                document.getElementById("measurementId").value = MeasurementID;
-                document.getElementById("dateTime" + i).appendChild(document.createTextNode(Date));
-                document.getElementById("lat" + i).appendChild(document.createTextNode(Latitude));
-                document.getElementById("long" + i).appendChild(document.createTextNode(Longitude));
-                document.getElementById("phase" + i).appendChild(document.createTextNode(Phase));
-                document.getElementById("horizontalAcc" + i).appendChild(document.createTextNode(HorizontalAccuracy));
-                document.getElementById("verticalAcc" + i).appendChild(document.createTextNode(VerticalAccuracy));
-                document.getElementById("altitude" + i).appendChild(document.createTextNode(Altitude));
+                document.getElementById("measurementId").value = results[i].MeasurementID;
+                document.getElementById("dateTime" + i).appendChild(document.createTextNode(results[i].Date));
+                document.getElementById("lat" + i).appendChild(document.createTextNode(latitude));
+                document.getElementById("long" + i).appendChild(document.createTextNode(longitude));
+                document.getElementById("phase" + i).appendChild(document.createTextNode(results[i].Phase));
+                document.getElementById("horizontalAcc" + i).appendChild(document.createTextNode(horizontalAccuracy));
+                document.getElementById("verticalAcc" + i).appendChild(document.createTextNode(results[i].VerticalAccuracy));
+                document.getElementById("altitude" + i).appendChild(document.createTextNode(results[i].Altitude));
             }
 
-            if(Latitude !== null && Longitude !== null) {
-                map.setView(new L.LatLng(Latitude, Longitude), 17);
+            if(latitude !== null && longitude !== null) {
+                // zoom in on last point on the osm map
+                mapOsm.setView(new L.LatLng(latitude, longitude), 17);
+
+
+                //GeoAdminApi
+                var position = [WGStoCHy(latitude, longitude), WGStoCHx(latitude, longitude)];
+                // Zoom in on the position on the geoAdmin map
+                mapGeoadmin.getView().setCenter(position);
+                mapGeoadmin.getView().setResolution(5);
             }
 
 
@@ -76,7 +74,7 @@ window.onload = function () {
 
             requestVelocity.open('POST', urlVelocity);
             requestVelocity.setRequestHeader("Content-Type", "application/json");
-            requestVelocity.send(JSON.stringify({startTime: starttime, endTime: endtime, longitude1: longStart, latitude1: latStart,
+            requestVelocity.send(JSON.stringify({startTime: startTime, endTime: endTime, longitude1: longStart, latitude1: latStart,
                 longitude2: longEnd, latitude2: latEnd}));
 
         }

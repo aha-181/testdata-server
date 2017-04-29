@@ -16,15 +16,15 @@ select, input {
   margin-top: 0.5em;
 }
 
-#queryButton {
-  display: block;
-}
-
 table, th, td {
   border: 1px solid black;
   border-collapse: collapse;
   text-align: left;
   padding: 5px;
+}
+
+#queryButton {
+  display: block;
 }
 
 #timespanTable {
@@ -37,14 +37,14 @@ table, th, td {
 }
 
 /*Leaflet Map*/
-#map {
+#mapOsm {
   width: 700px;
   height: 400px;
   display: inline-block;
 }
 
 /*GeoAdmin Map*/
-.map {
+#mapGeoAdmin {
   height: 400px;
   width: 40%;
   display: inline-block;
