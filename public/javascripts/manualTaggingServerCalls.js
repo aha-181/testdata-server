@@ -61,7 +61,7 @@ window.onload = function () {
 
 
             //get Velocity
-            var urlVelocity = 'http://localhost:3000/speedCalculation/v1';
+            var urlVelocity = 'http://localhost:3000/api/v4/calculateSpeed';
             var requestVelocity = new XMLHttpRequest();
             requestVelocity.onreadystatechange = function() {
                 if (this.readyState === 4 && this.status === 200) {
@@ -74,8 +74,9 @@ window.onload = function () {
 
             requestVelocity.open('POST', urlVelocity);
             requestVelocity.setRequestHeader("Content-Type", "application/json");
-            requestVelocity.send(JSON.stringify({startTime: startTime, endTime: endTime, longitude1: longStart, latitude1: latStart,
-                longitude2: longEnd, latitude2: latEnd}));
+            requestVelocity.send(JSON.stringify( { positions: [
+                                                    {longitude: longStart, latitude: latStart, time: startTime},
+                                                    {longitude: longEnd, latitude: latEnd, time: endTime}] } ));
 
         }
     };

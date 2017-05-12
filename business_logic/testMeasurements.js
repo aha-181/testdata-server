@@ -6,11 +6,16 @@ var connection = dbConnection.connection;
 
 var testStatus = 'Working';
 var errors = '';
-var amountOfRequests;
+var amountOfRequests = 0;
 var amountOfRequestsDone = 0;
+
+function isFinished() {
+    return amountOfRequests === amountOfRequestsDone;
+}
 
 
 function startTesting(req, res) {
+    amountOfRequestsDone = 0;
     var version = req.body.version;
     var getMeasurementCountQuery = 'SELECT COUNT(DISTINCT MeasurementID) as count FROM mobile_data_log ' +
         'WHERE ExpectedLocationID IS NOT NULL AND ExpectedLocationID != -1';
@@ -37,8 +42,8 @@ function startTesting(req, res) {
             }
             var testMeasurementID = results.insertId;
 
-            const getTaggedMeasurementsQuery = 'SELECT MeasurementID, ID, ExpectedLocationID, ExpectedSurroundingID, ' +
-                'ExpectedTypeOfMotionID, ExpectedPopulationDensityID, Latitude, Longitude, Date FROM mobile_data_log ' +
+            const getTaggedMeasurementsQuery = 'SELECT MeasurementID, ID, ExpectedLocationID, ' +
+                'Latitude, Longitude, Date, Phase, HorizontalAccuracy FROM mobile_data_log ' +
                 'WHERE ExpectedLocationID IS NOT NULL AND ExpectedLocationID != -1 ORDER BY MeasurementID ASC';
 
             connection.query(getTaggedMeasurementsQuery, function(error, results) {
@@ -71,7 +76,9 @@ function prepareRequestData(results, version, testMeasurementID) {
             positions[results[i].ID - 1] = {
                 "longitude": results[i].Longitude,
                 "latitude": results[i].Latitude,
-                "time": results[i].Date
+                "horizontal_accuracy": results[i].HorizontalAccuracy,
+                "time": results[i].Date,
+                "phase": results[i].Phase
             };
 
             if(i === results.length - 1) {
@@ -90,7 +97,9 @@ function prepareRequestData(results, version, testMeasurementID) {
             positions[results[i].ID - 1] = {
                 "longitude": results[i].Longitude,
                 "latitude": results[i].Latitude,
-                "time": results[i].Date
+                "horizontal_accuracy": results[i].HorizontalAccuracy,
+                "time": results[i].Date,
+                "phase": results[i].Phase
             };
         }
     }
@@ -99,7 +108,7 @@ function prepareRequestData(results, version, testMeasurementID) {
 function getTagging(version, postData, testMeasurementID, expectedResult, callback) {
 
     request.post(
-        'http://localhost:3000/tags/' + version,
+        'http://localhost:3000/api/' + version + '/tag',
         { json: postData },
         function (error, response) {
             if (!error && response.statusCode === 200) {
@@ -119,25 +128,10 @@ function insertTaggingResults(taggingResult, expectedResult, testMeasurementID) 
     var returnedLocationID = taggingResult.location.id;
     var returnedLocationIsCorrect = expectedLocationID === returnedLocationID ? 1 : 0;
 
-    var expectedSurroundingID = expectedResult[0].ExpectedSurroundingID;
-    var returnedSurroundingID = taggingResult.surroundings.geographical_surroundings.id;
-    var returnedSurroundingIsCorrect = expectedSurroundingID === returnedSurroundingID ? 1 : 0;
-
-    var expectedTypeOfMotionID = expectedResult[0].ExpectedTypeOfMotionID;
-    var returnedTypeOfMotionID = taggingResult.type_of_motion.id;
-    var returnedTypeOfMotionIsCorrect = expectedTypeOfMotionID === returnedTypeOfMotionID ? 1 : 0;
-
-    var expectedPopulationDensityID = expectedResult[0].ExpectedPopulationDensityID;
-    var returnedPopulationDensityID = taggingResult.surroundings.population_density.id;
-    var returnedPopulationDensityIsCorrect = expectedPopulationDensityID === returnedPopulationDensityID ? 1 : 0;
-
     var insertMeasurementExpectationsAndResultsQuery = 'INSERT INTO returned_measurement_values (MeasurementID, TestMeasurementID, ExpectedLocationID, ' +
-        'ExpectedSurroundingID, ExpectedTypeOfMotionID, ExpectedPopulationDensityID, ReturnedLocationID, ReturnedSurroundingID, ReturnedTypeOfMotionID, ' +
-        'ReturnedPopulationDensityID, ReturnedLocationIsCorrect, ReturnedSurroundingIsCorrect, ReturnedTypeOfMotionIsCorrect, ' +
-        'ReturnedPopulationDensityIsCorrect) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    var expectationsInserts = [expectedResult[0].MeasurementID, testMeasurementID, expectedLocationID, expectedSurroundingID, expectedTypeOfMotionID,
-        expectedPopulationDensityID, returnedLocationID, returnedSurroundingID, returnedTypeOfMotionID, returnedPopulationDensityID,
-        returnedLocationIsCorrect, returnedSurroundingIsCorrect, returnedTypeOfMotionIsCorrect, returnedPopulationDensityIsCorrect];
+        'ReturnedLocationID, ReturnedLocationIsCorrect) ' +
+        'VALUES (?, ?, ?, ?, ?)';
+    var expectationsInserts = [expectedResult[0].MeasurementID, testMeasurementID, expectedLocationID, returnedLocationID, returnedLocationIsCorrect];
     insertMeasurementExpectationsAndResultsQuery = mysql.format(insertMeasurementExpectationsAndResultsQuery, expectationsInserts);
 
     connection.query(insertMeasurementExpectationsAndResultsQuery, function(error) {
@@ -151,8 +145,7 @@ function insertTaggingResults(taggingResult, expectedResult, testMeasurementID) 
 
 function requestFinished(testMeasurementID) {
     if(++amountOfRequestsDone === amountOfRequests) {
-        var query = 'SELECT ReturnedLocationIsCorrect, ReturnedSurroundingIsCorrect, ReturnedTypeOfMotionIsCorrect, ReturnedPopulationDensityIsCorrect ' +
-            'FROM returned_measurement_values WHERE TestMeasurementID = ?';
+        var query = 'SELECT ReturnedLocationIsCorrect FROM returned_measurement_values WHERE TestMeasurementID = ?';
         var inserts = [testMeasurementID];
         query = mysql.format(query, inserts);
         connection.query(query, function (error, results) {
@@ -163,11 +156,11 @@ function requestFinished(testMeasurementID) {
 
             var totalCorrect = 0;
             for(var i = 0; i < results.length; i++) {
-                totalCorrect = totalCorrect + results[i].ReturnedLocationIsCorrect + results[i].ReturnedSurroundingIsCorrect +
-                    results[i].ReturnedTypeOfMotionIsCorrect + results[i].ReturnedPopulationDensityIsCorrect;
+                totalCorrect = totalCorrect + results[i].ReturnedLocationIsCorrect;
             }
 
-            var resultingPercent = (totalCorrect / (results.length * 4)) * 100;
+            var resultingPercent = (totalCorrect / (results.length)) * 100;
+            console.log(resultingPercent);
 
             var updateQuery = 'UPDATE resulting_correctness SET PercentageOfCorrectness = ? WHERE TestMeasurementID = ?';
             var insertsOfUpdate = [resultingPercent, testMeasurementID];
@@ -191,4 +184,4 @@ function showStatus(res) {
         amountOfRequestsDone: amountOfRequestsDone, errors: errors }));
 }
 
-module.exports = { 'startTesting': startTesting, 'showStatus': showStatus };
+module.exports = { 'startTesting': startTesting, 'showStatus': showStatus, 'isFinished': isFinished };

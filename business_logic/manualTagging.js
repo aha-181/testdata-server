@@ -20,9 +20,8 @@ function getMeasurementForTagging(res) {
 }
 
 function updateMeasurement(req, res) {
-    var query = 'UPDATE mobile_data_log SET ExpectedLocationID = ?, ExpectedSurroundingID = ?, ExpectedTypeOfMotionID = ?, ' +
-        'ExpectedPopulationDensityID = ? WHERE MeasurementID = ?';
-    var inserts = [req.body.locationTag, req.body.surroundingTag, req.body.typeOfMotionTag, req.body.populationDensityTag, req.body.measurementId];
+    var query = 'UPDATE mobile_data_log SET ExpectedLocationID = ? WHERE MeasurementID = ?';
+    var inserts = [req.body.locationTag, req.body.measurementId];
     query = mysql.format(query, inserts);
 
     connection.query(query, function (error) {

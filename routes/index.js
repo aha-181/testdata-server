@@ -31,6 +31,11 @@ router.get('/testMeasurements', function(req, res) {
     res.render('testingIndex');
 });
 
+router.get('/testFinished', function(req, res) {
+    res.json({ isFinished: testMeasurements.isFinished() });
+});
+
+
 // starts the actual testing process
 router.post('/startTest', function(req, res) {
     testMeasurements.startTesting(req, res);

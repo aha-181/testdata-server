@@ -4,9 +4,8 @@ var connection = dbConnection.connection;
 
 
 function getTestResults(testNumber, res) {
-    var queryLatestTest = 'SELECT TestMeasurementID, ReturnedLocationIsCorrect, ReturnedSurroundingIsCorrect, ReturnedTypeOfMotionIsCorrect, ' +
-        'ReturnedPopulationDensityIsCorrect FROM returned_measurement_values WHERE TestMeasurementID = ( SELECT MAX(TestMeasurementID) ' +
-        'FROM returned_measurement_values )';
+    var queryLatestTest = 'SELECT TestMeasurementID, ReturnedLocationIsCorrect ' +
+        'FROM returned_measurement_values WHERE TestMeasurementID = ( SELECT MAX(TestMeasurementID) FROM returned_measurement_values )';
 
     connection.query(queryLatestTest, function (error, results) {
         if(error) {
@@ -17,8 +16,8 @@ function getTestResults(testNumber, res) {
             if(testNumber) {
                 if(!isNaN(testNumber)) {
                     if(testNumber < results[0].TestMeasurementID && testNumber > 0) {
-                        var queryOlderTest = 'SELECT TestMeasurementID, ReturnedLocationIsCorrect, ReturnedSurroundingIsCorrect, ReturnedTypeOfMotionIsCorrect, ' +
-                            'ReturnedPopulationDensityIsCorrect FROM returned_measurement_values WHERE TestMeasurementID = ?';
+                        var queryOlderTest = 'SELECT TestMeasurementID, ReturnedLocationIsCorrect ' +
+                            'FROM returned_measurement_values WHERE TestMeasurementID = ?';
                         var inserts = [testNumber];
                         queryOlderTest = mysql.format(queryOlderTest, inserts);
                         connection.query(queryOlderTest, function (error, resultsOlderQuery) {
@@ -52,21 +51,12 @@ function getTestResults(testNumber, res) {
 
 function renderCalculation(res, results) {
     var locationTotal = 0;
-    var surroundingTotal = 0;
-    var motionTotal = 0;
-    var populationTotal = 0;
 
     for(var i = 0; i < results.length; i++) {
         locationTotal += results[i].ReturnedLocationIsCorrect;
-        surroundingTotal += results[i].ReturnedSurroundingIsCorrect;
-        motionTotal += results[i].ReturnedTypeOfMotionIsCorrect;
-        populationTotal += results[i].ReturnedPopulationDensityIsCorrect;
     }
 
     var locationPercent = (locationTotal / results.length) * 100;
-    var surroundingPercent = (surroundingTotal / results.length) * 100;
-    var motionPercent = (motionTotal / results.length) * 100;
-    var populationPercent = (populationTotal / results.length) * 100;
 
     var testID = results[0].TestMeasurementID;
     var versionQuery = 'SELECT Version, PercentageOfCorrectness FROM resulting_correctness WHERE TestMeasurementID = ?';
@@ -82,8 +72,7 @@ function renderCalculation(res, results) {
         if(results.length > 0) {
             var version = results[0].Version;
             var total = results[0].PercentageOfCorrectness;
-            res.render('resultOfTests', { testNumber: testID, version: version, total: total, location: locationPercent,
-                surrounding: surroundingPercent, typeOfMotion: motionPercent, populationDensity: populationPercent});
+            res.render('resultOfTests', { testNumber: testID, version: version, total: total, location: locationPercent });
         } else {
             res.render('resultOfTests', {error: 'An error occurred'});
         }

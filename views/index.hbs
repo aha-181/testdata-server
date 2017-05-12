@@ -7,50 +7,11 @@
     <label for="locationTag">Select Location Tag:</label>
     <select name="locationTag" id="locationTag">
         <option selected disabled hidden>Choose here</option>
-        <option value="1">Train</option>
-        <option value="2">Car</option>
-        <option value="3">Foot Inside (Building)</option>
-        <option value="4">Foot Outside</option>
-        <option value="100">Other</option> /*OSM Tag is defined but not in dropdown list*/
-        <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
-    </select>
-
-    <label for="surroundingTag">Select Surrounding Tag:</label>
-    <select name="surroundingTag" id="surroundingTag">
-        <option selected disabled hidden>Choose here</option>
-        <option value="1">Forest</option> /*OSM: landuse forest, orchard*/
-        <option value="2">Grass</option> /*OSM: landuse farmland, grass, meadow, recreation_ground, allotments*/
-        <option value="3">Water</option> /*OSM: landuse basin, natural water*/
-        <option value="4">Building</option> /*OSM: building*/
-        <option value="100">Other</option> /*OSM Tag is defined but not in dropdown list*/
-        <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
-    </select>
-
-    <label for="typeOfMotionTag">Select Type of Motion Tag:</label>
-    <select name="typeOfMotionTag" id="typeOfMotionTag">
-        <option selected disabled hidden>Choose here</option>
-        <option value="1">Stationary < 3km/h</option> /*Stationär < 3 km/h*/
-        <option value="2">Pedestrian 3 km/h - < 10 km/h</option> /*Gehend, rennend: Fussgänger: 3 km/h … < 10 km/h*/
-        <option value="3">Vehicular 10 km/h - < 120 km/h</option> /*Fahrend: Fahrzeuge: 10 km/h … < 120 km/h*/
-        <option value="4">High-speed 120 km/h - < 350km/h</option> /*Hochgeschwindigkeitsfahrzeuge: 120 km/h … < 350km/h*/
-        <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
-    </select>
-
-    <br>
-    <label for="populationDensityTag">Select Population Density Tag:</label>
-    <select name="populationDensityTag" id="populationDensityTag">
-        <option selected disabled hidden>Choose here</option>
-        <option value="1">Kleinzentren</option>
-        <option value="1">Periurbane ländliche Gemeinde</option>
-        <option value="1">Agrargemeinde</option>
-        <option value="1">Touristische Gemeinde</option> /* bis hier ländlich, ch.are.gemeindetypen */
-        <option value="2">Grosszentren</option> /* ab hier städtisch, ch.are.gemeindetypen */
-        <option value="2">Nebenzentren der Grosszentren</option>
-        <option value="2">Gürtel der Grosszentren</option>
-        <option value="2">Mittelzentren</option>
-        <option value="2">Gürtel der Mittelzentren</option>
-        <option value="100">Other</option> /*anderer definierter Typ*/
-        <option value="-1">Unknown</option> /*Kann von Hand nicht definiert werden*/
+        <option value="1">railway</option>
+        <option value="2">street</option>
+        <option value="3">building</option>
+        <option value="100">other</option> /*OSM Tag is defined but not in dropdown list*/
+        <option value="-1">unknown</option> /*Kann von Hand nicht definiert werden*/
     </select>
 
     <label for="measurementId">MeasurementID:</label>

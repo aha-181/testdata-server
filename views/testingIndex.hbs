@@ -1,10 +1,17 @@
-<form action="/startTest" method="post">
+<form id="testVersionForm" action="/startTest" method="post">
     <label for="version" style="padding-left: 0">Select Version:</label>
     <select name="version" id="version">
         <option selected disabled hidden>Choose here</option>
-        <option value="v1">v1</option>
-        <option value="v2">v2</option>
+        <option value="v1.0">v1.0</option>
+        <option value="v2.0">v2.0</option>
+        <option value="v2.1">v2.1</option>
+        <option value="v3.0">v3.0</option>
+        <option value="v4.0">v4.0</option>
     </select>
     <br>
-    <input type="submit" value="Testen" />
+    <input id="startTestButton" type="submit" value="Testen" />
 </form>
+
+<p id="testFinished"></p>
+
+<script type="text/javascript" src="/javascripts/sendRequest.js"></script>
