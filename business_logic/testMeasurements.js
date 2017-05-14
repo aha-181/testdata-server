@@ -53,7 +53,16 @@ function startTesting(req, res) {
                     throw error;
                 }
 
-                prepareRequestData(results, version, testMeasurementID);
+                var counter = 0;
+                var intervalId = setInterval(function () {
+                    var testData = results.slice(counter, counter + 8);
+                    prepareRequestData(testData, version, testMeasurementID);
+                    counter += 8;
+                    if(counter >= results.length) {
+                        clearInterval(intervalId);
+                        console.log("done!!!");
+                    }
+                }, 5000);
 
 
                 res.render('testingFeedback', { testStatus: testStatus, amountOfRequests: amountOfRequests,
@@ -70,7 +79,7 @@ function prepareRequestData(results, version, testMeasurementID) {
     var expectedResult = [];
     var postData = {};
 
-    for(var i = 0; i < results.length; i++) {
+    for(var i = 0; i < 8; i++) {
 
         if(measurementID === results[i].MeasurementID) {
             positions[results[i].ID - 1] = {
@@ -114,9 +123,14 @@ function getTagging(version, postData, testMeasurementID, expectedResult, callba
             if (!error && response.statusCode === 200) {
                 callback(response.body, expectedResult, testMeasurementID);
             } else {
+                console.error("error happened!!!");
+                console.error(response);
+                errors = "error happened!!!";
+                /*
                 console.error("error message: " + response.body.validations.body[0].messages);
                 console.error("status code: " + response.statusCode);
                 errors = response.body.validations.body[0].messages[0];
+                */
             }
         }
     );
