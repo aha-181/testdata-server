@@ -5,14 +5,26 @@
 <table>
     <thead>
         <tr>
-            <th>Total correctness</th>
-            <th>Correctness of Location in percent</th>
+            <th>Correctness of location</th>
+            <th>Total share of unknown</th>
+            <th>Correctness of railway tagging</th>
+            <th>Share of unknown in wrong railway tagging</th>
+            <th>Correctness of street tagging</th>
+            <th>Share of unknown in wrong street tagging</th>
+            <th>Correctness of building tagging</th>
+            <th>Share of unknown in wrong building tagging</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>{{total}}</td>
-            <td>{{location}}</td>
+            <td>{{location}} %</td>
+            <td>{{totalUnknown}} %</td>
+            <td>{{railwayCorrect}} %</td>
+            <td>{{railwayUnknown}} %</td>
+            <td>{{streetCorrect}} %</td>
+            <td>{{streetUnknown}} %</td>
+            <td>{{buildingCorrect}} %</td>
+            <td>{{buildingUnknown}} %</td>
         </tr>
     </tbody>
 </table>
