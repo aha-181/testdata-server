@@ -62,7 +62,7 @@ function startTesting(req, res) {
                         clearInterval(intervalId);
                         console.log("done!!!");
                     }
-                }, 5000);
+                }, 50);
 
 
                 res.render('testingFeedback', { testStatus: testStatus, amountOfRequests: amountOfRequests,
@@ -85,7 +85,7 @@ function prepareRequestData(results, version, testMeasurementID) {
             positions[results[i].ID - 1] = {
                 "longitude": results[i].Longitude,
                 "latitude": results[i].Latitude,
-                "horizontal_accuracy": results[i].HorizontalAccuracy,
+                "horizontalAccuracy": results[i].HorizontalAccuracy,
                 "time": results[i].Date,
                 "phase": results[i].Phase
             };
@@ -106,7 +106,7 @@ function prepareRequestData(results, version, testMeasurementID) {
             positions[results[i].ID - 1] = {
                 "longitude": results[i].Longitude,
                 "latitude": results[i].Latitude,
-                "horizontal_accuracy": results[i].HorizontalAccuracy,
+                "horizontalAccuracy": results[i].HorizontalAccuracy,
                 "time": results[i].Date,
                 "phase": results[i].Phase
             };
@@ -120,17 +120,74 @@ function getTagging(version, postData, testMeasurementID, expectedResult, callba
         'http://localhost:3000/api/' + version + '/tag',
         { json: postData },
         function (error, response) {
+
             if (!error && response.statusCode === 200) {
                 callback(response.body, expectedResult, testMeasurementID);
             } else {
-                console.error("error happened!!!");
-                console.error(response);
-                errors = "error happened!!!";
-                /*
-                console.error("error message: " + response.body.validations.body[0].messages);
-                console.error("status code: " + response.statusCode);
-                errors = response.body.validations.body[0].messages[0];
-                */
+
+                if(response.statusCode === 400 && response.body === 'Cannot tag positions less accurate than 200 meters.') {
+                    var errorJson1 = {
+                      'location': {
+                          'id': 100,
+                          'probability': null
+                      }
+                    };
+                    callback(errorJson1, expectedResult, testMeasurementID);
+                } else if(response.statusCode === 400 && response.body === 'All positions have the same time.') {
+                    var errorJson2 = {
+                        'location': {
+                            'id': 101,
+                            'probability': null
+                        }
+                    };
+                    callback(errorJson2, expectedResult, testMeasurementID);
+                } else if(response.statusCode === 400 && response.body === 'The input-positions are too far away from each other.') {
+                    var errorJson3 = {
+                        'location': {
+                            'id': 102,
+                            'probability': null
+                        }
+                    };
+                    callback(errorJson3, expectedResult, testMeasurementID);
+                } else if(response.statusCode === 400 && response.body === 'Cannot tag positions with multiple occurrences of longitude or latitude 0.') {
+                    var errorJson4 = {
+                        'location': {
+                            'id': 103,
+                            'probability': null
+                        }
+                    };
+                    callback(errorJson4, expectedResult, testMeasurementID);
+                } else if(response.statusCode === 400 && response.body === 'Not all positions are located within switzerland.') {
+                    var errorJson5 = {
+                        'location': {
+                            'id': 104,
+                            'probability': null
+                        }
+                    };
+                    callback(errorJson5, expectedResult, testMeasurementID);
+                } else if(response.statusCode === 400 && response.body === 'Phases DownloadStart, DownloadEnd and UploadEnd where expected. At least one phase is missing.') {
+                    var errorJson6 = {
+                        'location': {
+                            'id': 105,
+                            'probability': null
+                        }
+                    };
+                    callback(errorJson6, expectedResult, testMeasurementID);
+                } else if(response.statusCode === 500) {
+                    var errorJson7 = {
+                        'location': {
+                            'id': 106,
+                            'probability': null
+                        }
+                    };
+                    callback(errorJson7, expectedResult, testMeasurementID);
+                    console.error("Internal Server Error happened!!!");
+                }
+                else {
+                    console.error("error happened!!!");
+                    console.error(response);
+                    errors = "error happened!!!";
+                }
             }
         }
     );
@@ -142,10 +199,11 @@ function insertTaggingResults(taggingResult, expectedResult, testMeasurementID) 
     var returnedLocationID = taggingResult.location.id;
     var returnedLocationIsCorrect = expectedLocationID === returnedLocationID ? 1 : 0;
 
-    var insertMeasurementExpectationsAndResultsQuery = 'INSERT INTO returned_measurement_values (MeasurementID, TestMeasurementID, ExpectedLocationID, ' +
-        'ReturnedLocationID, ReturnedLocationIsCorrect) ' +
-        'VALUES (?, ?, ?, ?, ?)';
-    var expectationsInserts = [expectedResult[0].MeasurementID, testMeasurementID, expectedLocationID, returnedLocationID, returnedLocationIsCorrect];
+    var insertMeasurementExpectationsAndResultsQuery = 'INSERT INTO returned_measurement_values (MeasurementID, TestMeasurementID, ' +
+        'ExpectedLocationID, ReturnedLocationID, ReturnedLocationIsCorrect, ReturnedProbability) ' +
+        'VALUES (?, ?, ?, ?, ?, ?)';
+    var expectationsInserts = [expectedResult[0].MeasurementID, testMeasurementID, expectedLocationID, returnedLocationID,
+        returnedLocationIsCorrect, taggingResult.location.probability];
     insertMeasurementExpectationsAndResultsQuery = mysql.format(insertMeasurementExpectationsAndResultsQuery, expectationsInserts);
 
     connection.query(insertMeasurementExpectationsAndResultsQuery, function(error) {

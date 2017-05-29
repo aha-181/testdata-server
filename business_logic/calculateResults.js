@@ -79,6 +79,9 @@ function renderCalculation(res, results) {
         'ReturnedLocationIsCorrect = 0 AND TestMeasurementID = ?;';
     var buildingUnknownQuery = 'SELECT count(*) as count FROM returned_measurement_values WHERE ExpectedLocationID = 3 AND ' +
         'ReturnedLocationID = -1 AND TestMeasurementID = ?;';
+    var totalError200 = 'SELECT count(*) as count FROM returned_measurement_values WHERE ReturnedLocationID = 100 AND TestMeasurementID = ?;';
+    var railwayError200 = 'SELECT count(*) as count FROM returned_measurement_values WHERE ExpectedLocationID = 1 AND ' +
+        'ReturnedLocationID = 100 AND TestMeasurementID = ?;';
     var inserts = [testID];
     versionQuery = mysql.format(versionQuery, inserts);
     railwayCorrectQuery = mysql.format(railwayCorrectQuery, inserts);
@@ -90,11 +93,14 @@ function renderCalculation(res, results) {
     buildingCorrectQuery = mysql.format(buildingCorrectQuery, inserts);
     buildingWrongQuery = mysql.format(buildingWrongQuery, inserts);
     buildingUnknownQuery = mysql.format(buildingUnknownQuery, inserts);
+    totalError200 = mysql.format(totalError200, inserts);
+    railwayError200 = mysql.format(railwayError200, inserts);
 
     parallel([
             function(callback) {
                 dbConnection.queryMultiple([versionQuery, railwayCorrectQuery, railwayWrongQuery, railwayUnwnownQuery, streetCorrectQuery,
-                    streetWrongQuery, streetUnknownQuery, buildingCorrectQuery, buildingWrongQuery, buildingUnknownQuery], function(err, results) {
+                    streetWrongQuery, streetUnknownQuery, buildingCorrectQuery, buildingWrongQuery, buildingUnknownQuery,
+                    totalError200, railwayError200], function(err, results) {
                     callback(err, results);
                 });
             }
@@ -129,10 +135,13 @@ function renderCalculation(res, results) {
                 var totalUnknown = railwayUnknown + streetUnknown + buildingUnknown;
                 var totalShareUnknown = Math.round(totalUnknown * 100 / totalMeasurements);
 
+                var totalError200 = Math.round(results[0][10][0].count * 100 / totalMeasurements);
+                var railwayError200 = Math.round(results[0][11][0].count * 100 / railwayTotal);
+
                 res.render('resultOfTests', { testNumber: testID, version: version, location: locationPercent,
                     railwayCorrect: railwayCorrectness, railwayUnknown: railwayShareUnknown, streetCorrect: streetCorrectness,
                     streetUnknown: streetShareUnknown, buildingCorrect: buildingCorrectness, buildingUnknown: buildingShareUnknown,
-                    totalUnknown: totalShareUnknown });
+                    totalUnknown: totalShareUnknown, totalError200: totalError200, railwayError200: railwayError200});
             } else {
                 res.render('resultOfTests', {error: 'An error occurred'});
             }

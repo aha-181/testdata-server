@@ -45,6 +45,7 @@ window.onload = function () {
                 document.getElementById("horizontalAcc" + i).appendChild(document.createTextNode(horizontalAccuracy));
                 document.getElementById("verticalAcc" + i).appendChild(document.createTextNode(results[i].VerticalAccuracy));
                 document.getElementById("altitude" + i).appendChild(document.createTextNode(results[i].Altitude));
+                document.getElementById("cellId" + i).appendChild(document.createTextNode(results[i].CellID));
             }
 
             if(latitude !== null && longitude !== null) {
