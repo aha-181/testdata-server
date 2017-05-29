@@ -1,34 +1,138 @@
-<h1>Results of Test {{testNumber}} with Version {{version}}</h1>
+<h1>Resultate des Tests {{testNumber}} mit der Version {{version}}</h1>
 
 <p>{{error}}</p>
 
+<h2>Auswertung auf gesamte location</h2>
 <table>
     <thead>
         <tr>
-            <th>Correctness of location</th>
-            <th>Total share of unknown</th>
-            <th>Total share of error: accuracy bigger 200m</th>
-            <th>Correctness of railway tagging</th>
-            <th>Share of unknown in wrong railway tagging</th>
-            <th>Share of error: accuracy bigger 200m in railway tagging</th>
-            <th>Correctness of street tagging</th>
-            <th>Share of unknown in wrong street tagging</th>
-            <th>Correctness of building tagging</th>
-            <th>Share of unknown in wrong building tagging</th>
+            <th>Anzahl Messungen</th>
+            <th>Anteil Richtige</th>
+            <th>Anteil Falsche</th>
+            <th>Anteil Unbekannte</th>
+            <th>Anteil Abgewiesene</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>{{location}} %</td>
+            <td>{{totalCount}} Messungen</td>
+            <td>{{totalCorrect}} %</td>
+            <td>{{totalWrong}} %</td>
             <td>{{totalUnknown}} %</td>
-            <td>{{totalError200}} %</td>
+            <td>{{totalRejected}} %</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h2>Auswertung der Abgewiesenen</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Anzahl Messungen</th>
+            <th>Anteil Grösser 200 Meter Accuracy</th>
+            <th>Anteil Überall gleiche Zeit</th>
+            <th>Anteil Input-Positionen zu weit auseinander</th>
+            <th>Anteil Longitude oder Latitude 0</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{rejectedCount}} Messungen</td>
+            <td>{{rejectedAccuracy}} %</td>
+            <td>{{rejectedSameTime}} %</td>
+            <td>{{rejectedTooFar}} %</td>
+            <td>{{rejectedLonLat}} %</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h2>Auswertung der Angenommenen</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Anzahl Messungen</th>
+            <th>Anteil Richtige der Angenommenen</th>
+            <th>Anteil Falsche der Angenommenen</th>
+            <th>Anteil Unbekannte der Angenommenen</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{acceptedCount}} Messungen</td>
+            <td>{{acceptedCorrect}} %</td>
+            <td>{{acceptedWrong}} %</td>
+            <td>{{acceptedUnknown}} %</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h2>Auswertung railway</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Anzahl railway Messungen</th>
+            <th>Anteil Richtige der angenommenen railway</th>
+            <th>Anteil Falsche der angenommenen railway</th>
+            <th>Anteil Unbekannte der angenommenen railway</th>
+            <th>Anteil Abgewiesene railway</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{railwayCount}} Messungen</td>
             <td>{{railwayCorrect}} %</td>
+            <td>{{railwayWrong}} %</td>
             <td>{{railwayUnknown}} %</td>
-            <td>{{railwayError200}} %</td>
+            <td>{{railwayRejected}} %</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h2>Auswertung street</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Anzahl street Messungen</th>
+            <th>Anteil Richtige der angenommenen street</th>
+            <th>Anteil Falsche der angenommenen street</th>
+            <th>Anteil Unbekannte der angenommenen street</th>
+            <th>Anteil Abgewiesene street</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{streetCount}} Messungen</td>
             <td>{{streetCorrect}} %</td>
+            <td>{{streetWrong}} %</td>
             <td>{{streetUnknown}} %</td>
+            <td>{{streetRejected}} %</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h2>Auswertung building</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Anzahl building Messungen</th>
+            <th>Anteil Richtige der angenommenen building</th>
+            <th>Anteil Falsche der angenommenen building</th>
+            <th>Anteil Unbekannte der angenommenen building</th>
+            <th>Anteil Abgewiesene building</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{buildingCount}} Messungen</td>
             <td>{{buildingCorrect}} %</td>
+            <td>{{buildingWrong}} %</td>
             <td>{{buildingUnknown}} %</td>
+            <td>{{buildingRejected}} %</td>
         </tr>
     </tbody>
 </table>
