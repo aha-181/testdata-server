@@ -125,51 +125,51 @@ function getTagging(version, postData, testMeasurementID, expectedResult, callba
                 callback(response.body, expectedResult, testMeasurementID);
             } else {
 
-                if(response.statusCode === 400 && response.body === 'Cannot tag positions less accurate than 200 meters.') {
+                if(response.statusCode === 400 && response.body.error === 'Cannot tag positions less accurate than 200 meters.') {
                     var errorJson1 = {
                       'location': {
                           'id': 100,
-                          'probability': null
+                          'weight': null
                       }
                     };
                     callback(errorJson1, expectedResult, testMeasurementID);
-                } else if(response.statusCode === 400 && response.body === 'All positions have the same time.') {
+                } else if(response.statusCode === 400 && response.body.error === 'All positions have the same time.') {
                     var errorJson2 = {
                         'location': {
                             'id': 101,
-                            'probability': null
+                            'weight': null
                         }
                     };
                     callback(errorJson2, expectedResult, testMeasurementID);
-                } else if(response.statusCode === 400 && response.body === 'The input-positions are too far away from each other.') {
+                } else if(response.statusCode === 400 && response.body.error === 'The input-positions are too far away from each other.') {
                     var errorJson3 = {
                         'location': {
                             'id': 102,
-                            'probability': null
+                            'weight': null
                         }
                     };
                     callback(errorJson3, expectedResult, testMeasurementID);
-                } else if(response.statusCode === 400 && response.body === 'Cannot tag positions with multiple occurrences of longitude or latitude 0.') {
+                } else if(response.statusCode === 400 && response.body.error === 'Cannot tag positions with multiple occurrences of longitude or latitude 0.') {
                     var errorJson4 = {
                         'location': {
                             'id': 103,
-                            'probability': null
+                            'weight': null
                         }
                     };
                     callback(errorJson4, expectedResult, testMeasurementID);
-                } else if(response.statusCode === 400 && response.body === 'Not all positions are located within switzerland.') {
+                } else if(response.statusCode === 400 && response.body.error === 'Not all positions are located within switzerland.') {
                     var errorJson5 = {
                         'location': {
                             'id': 104,
-                            'probability': null
+                            'weight': null
                         }
                     };
                     callback(errorJson5, expectedResult, testMeasurementID);
-                } else if(response.statusCode === 400 && response.body === 'Phases DownloadStart, DownloadEnd and UploadEnd where expected. At least one phase is missing.') {
+                } else if(response.statusCode === 400 && response.body.error === 'Phases DownloadStart, DownloadEnd and UploadEnd where expected. At least one phase is missing.') {
                     var errorJson6 = {
                         'location': {
                             'id': 105,
-                            'probability': null
+                            'weight': null
                         }
                     };
                     callback(errorJson6, expectedResult, testMeasurementID);
@@ -177,7 +177,7 @@ function getTagging(version, postData, testMeasurementID, expectedResult, callba
                     var errorJson7 = {
                         'location': {
                             'id': 106,
-                            'probability': null
+                            'weight': null
                         }
                     };
                     callback(errorJson7, expectedResult, testMeasurementID);
@@ -200,10 +200,10 @@ function insertTaggingResults(taggingResult, expectedResult, testMeasurementID) 
     var returnedLocationIsCorrect = expectedLocationID === returnedLocationID ? 1 : 0;
 
     var insertMeasurementExpectationsAndResultsQuery = 'INSERT INTO returned_measurement_values (MeasurementID, TestMeasurementID, ' +
-        'ExpectedLocationID, ReturnedLocationID, ReturnedLocationIsCorrect, ReturnedProbability) ' +
+        'ExpectedLocationID, ReturnedLocationID, ReturnedLocationIsCorrect, ReturnedWeight) ' +
         'VALUES (?, ?, ?, ?, ?, ?)';
     var expectationsInserts = [expectedResult[0].MeasurementID, testMeasurementID, expectedLocationID, returnedLocationID,
-        returnedLocationIsCorrect, taggingResult.location.probability];
+        returnedLocationIsCorrect, taggingResult.location.weight];
     insertMeasurementExpectationsAndResultsQuery = mysql.format(insertMeasurementExpectationsAndResultsQuery, expectationsInserts);
 
     connection.query(insertMeasurementExpectationsAndResultsQuery, function(error) {
