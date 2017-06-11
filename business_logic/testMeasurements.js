@@ -149,7 +149,7 @@ function getTagging(version, postData, testMeasurementID, expectedResult, callba
                         }
                     };
                     callback(errorJson3, expectedResult, testMeasurementID);
-                } else if(response.statusCode === 400 && response.body.error === 'Cannot tag positions with multiple occurrences of longitude or latitude 0.') {
+                } else if(response.statusCode === 400 && response.body.error === 'Cannot tag invalid positions. (Multiple occurrences of longitude or latitude 0 OR invalid time strings.)') {
                     var errorJson4 = {
                         'location': {
                             'id': 103,
